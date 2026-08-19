@@ -1,0 +1,4 @@
+ReservationId	ClientName	HotelId
+0	Igor	1
+1	Mark	1
+2	Milana	1
