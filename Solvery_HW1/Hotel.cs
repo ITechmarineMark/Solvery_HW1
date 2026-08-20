@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+/// <summary>
+/// Data-класс Отель, инстанцируется данными
+/// из файла dz_1.txt
+/// </summary>
 namespace Solvery_HW1
 {
     class Hotel

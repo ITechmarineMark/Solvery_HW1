@@ -1,4 +1,5 @@
 ﻿using Solvery_HW1;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
@@ -10,8 +11,9 @@ string optionOwnBooking = "[4.]   Вывести свои бронировани
 string pathDZ = "..\\..\\..\\dz_1.txt";
 string pathRes = "..\\..\\..\\reservations.txt";
 
-List<Hotel> hotels = new List<Hotel>();
-List<Reservation> reservations = new List<Reservation>();
+// заменено на var, вместо явного объявления
+var hotels = new List<Hotel>();
+var reservations = new List<Reservation>();
 // выполнение программы
 // создаем reservations.txt, если его нет
 if (!File.Exists((pathRes)))
@@ -25,7 +27,21 @@ if (!File.Exists((pathRes)))
 LoadHotelsAndReservations(pathDZ, pathRes);
 ShowOptions();
 
-// функции
+/// <summary>
+/// Вывод функций доступных для
+/// пользователя.
+/// Метод считывает ввод с консоли
+/// и парсит в тип int.
+/// Затем идет обработка switch-case
+/// и в зависимости от выбранной
+/// опции (1-4), выполняется метод:
+/// ShowAllHotels()
+/// ShowAllFreeHotels()
+/// Book()
+/// ShowOwnBooking()
+/// А также заново запускается метод
+/// ShowOptions() (по требованию)
+/// </summary>
 void ShowOptions()
 {
     Console.WriteLine();
@@ -36,39 +52,61 @@ void ShowOptions()
     Console.WriteLine();
 
     Console.Write("Выберите: ");
-    int x = Int32.Parse(Console.ReadLine());
-    if (x == 1)
+    // заменено с Int32 на int.Parse()
+    int answer = int.Parse(Console.ReadLine());
+    // заменено на switch case (был if)
+    switch (answer)
     {
-        ShowAllHoltels();
-        ShowOptions();
-    }
-    else if (x == 2)
-    {
-        ShowAllFreeHotels();
-        ShowOptions();
-    }
-    else if (x == 3)
-    {
-        Book();
-        ShowOptions();
-    }
-    else if (x == 4)
-    {
-        ShowOwnBooking();
-        ShowOptions();
-    }
-}
+        case 1:
+            ShowAllHotels();
+            ShowOptions();
+            break;
 
-void ShowAllHoltels()
+        case 2:
+            ShowAllFreeHotels();
+            ShowOptions();
+            break;
+
+        case 3:
+            Book();
+            ShowOptions();
+            break;
+
+        case 4:
+            ShowOwnBooking();
+            ShowOptions();
+            break;
+        
+        default:
+            ShowOptions();
+            break;
+    } 
+}
+/// <summary>
+/// Показать все отели.
+/// Через цикл foreach выводится
+/// HotelId, HotelName, HotelAddress
+/// каждого отеля
+/// </summary>
+void ShowAllHotels()
 {
     foreach (Hotel hotel in hotels)
     {
-        Console.Write($"{hotel.HotelId} ");
+        // заменено с Write на WriteLine
+        Console.WriteLine($"{hotel.HotelId} ");
         Console.Write($"{hotel.HotelName} ");
-        Console.Write($"{hotel.HotelAddress}\n");
+        Console.Write($"{hotel.HotelAddress}");
     }
 }
-
+/// <summary>
+/// Показать все доступные (свободные)
+/// для бронирования отели.
+/// Используется два цикла foreach
+/// для соотношения пары:
+/// HotelId в классе Hotel и Reservation.
+/// При совпадении значений переменная
+/// counter прибавляет +1
+/// </summary>
 void ShowAllFreeHotels()
 {
     int counter = 0;
@@ -91,7 +129,16 @@ void ShowAllFreeHotels()
         counter = 0;
     }
 }
-
+/// <summary>
+/// Забронировать отель.
+/// Ввод пользователя сплитуется .Split(' '),
+/// splitted[0] - число, выбранный HotelId,
+/// splitted[1] - имя бронирующего
+/// Цикл foreach смотрит, есть ли свободные места.
+/// Если нет, выводит "Ошибка бронирования".
+/// Если свободно, создается объект и добавляется в List
+/// и делается запись в файл reservations.txt
+/// </summary>
 void Book()
 {
     Console.Write("Введите ID отеля и свое имя: ");
@@ -99,7 +146,8 @@ void Book()
     string[] splitted = answer.Split(' ');
     int size = reservations.Count();
     int counterRes = 0;
-    int hotelId = Int32.Parse(splitted[0]);
+    // Заменено с Int32 на int.Parse()
+    int hotelId = int.Parse(splitted[0]);
     // считаем сколько мест забронировано для конкретного отеля
     foreach (Reservation reservation in reservations) {
         if (reservation.HotelId == hotelId)
@@ -123,7 +171,10 @@ void Book()
         sw.Close();
     }
 }
-
+/// <summary>
+/// Показать свои бронирования.
+/// Через цикл foreach выводятся бронирования.
+/// </summary>
 void ShowOwnBooking()
 {
     foreach (Reservation reservation in reservations)
@@ -133,8 +184,13 @@ void ShowOwnBooking()
         Console.Write($"{reservation.HotelId}\n");
     }
 }
-
-// инстанцируем отели
+/// <summary>
+/// Загрузка отелей и бронирований.
+/// Через while бегаем по файлу
+/// и создаем объекты типа Hotel
+/// и Reservation, а затем добавляем их
+/// в два List'а
+/// </summary>
 void LoadHotelsAndReservations(string pathH, string pathR)
 {
     // отели
